@@ -1,23 +1,40 @@
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Navbar from './Components/Navbar';
 import './App.css';
 
 function App() {
+  const [images, updateImages] = useState([]);
+
+  function createCard(data){
+    const imgArray = data.map(img=>{
+      const download_url = img.download_url;
+      return (
+        <div className="col-sm-4 my-1">
+          <img src={download_url} width="350"/>
+        </div>
+      )
+    })
+    updateImages(imgArray);
+  }
+
+  async function retrieveData(){
+    const fetchedData = await axios.get('https://picsum.photos/v2/list');
+    createCard(fetchedData.data);
+  }
+
+  useEffect(()=>{
+    retrieveData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar/>
+      <div className="container">
+        <div className="row">
+          {images}
+        </div>
+      </div>
     </div>
   );
 }
